@@ -49,7 +49,8 @@ def note_keyboard(chat_id):
 
 @bot.message_handler(func=lambda message: message.text == end_reading)
 def end_bot(message):
-    bot.send_message(message.chat.id, "Спасибо за работу, пока!", reply_markup=ReplyKeyboardRemove())
+    bot.send_message(message.chat.id, farewell, reply_markup=ReplyKeyboardRemove())
+    bot.send_message(message.chat.id, f"<a href='{link}'>Google Form</a>", parse_mode="HTML")
     bot.stop_polling()
 
 
@@ -80,7 +81,7 @@ def send_part(message):
                 if text_number == 1:
                     note_keyboard(message.chat.id)
             else:  # text not exist, consequently part one is end, need take a choice to user: continue or end
-                bot.send_message(message.chat.id, "Конец произведения")
+                farewell_message(message)
         else:
             audio_path = f"audio/{PART_TWO_AUDIO}{text_number}.mp3"
             is_part_two_exist = os.path.exists(audio_path)
@@ -89,7 +90,13 @@ def send_part(message):
                 if text_number == 1:
                     note_keyboard(message.chat.id)
             else:  # audio not exist, consequently part one is end, need take a choice to user: continue or end
-                bot.send_message(message.chat.id, "Конец произведения")
+                farewell_message(message)
+
+
+def farewell_message(message):
+    bot.send_message(message.chat.id, farewell, reply_markup=ReplyKeyboardRemove())
+    bot.send_message(message.chat.id, "Конец произведения")
+    bot.send_message(message.chat.id, f"<a href='{link}'>Google Form</a>", parse_mode="HTML")
 
 
 def send_text_part(message, text_part, number):
@@ -126,7 +133,7 @@ def handle_continue_response(message):
         bot.send_message(message.chat.id, "Продолжаем!", reply_markup=telebot.types.ReplyKeyboardRemove())
         send_part(message)
     else:
-        bot.send_message(message.chat.id, "Пока!", reply_markup=telebot.types.ReplyKeyboardRemove())
+        farewell_message(message)
 
 
 bot.infinity_polling()
